@@ -14,6 +14,7 @@ const Home = () => {
     const [popular, setPopular] = useState([]);
     const [upcoming, setUpcoming] = useState([]);
 
+
     const urlNowPlaying = 'https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1';
     const urlPopular = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1';
     const urlUpcoming = 'https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1';
@@ -38,35 +39,63 @@ useEffect(() => {
         setNowPlaying(dataNowPlaying.results);
         setPopular(dataPopular.results);
         setUpcoming(dataUpcoming.results);
-    });
+        console.log(dataNowPlaying.results)
+    }) .catch(err => console.error('error:' + err));
+    
 }, []);
 
-  
+
+
   const resultsNowPlaying = nowPlaying.map((obj, i) => {
     return (
-            <MovieCard movie={obj} key={i}></MovieCard>
+            <MovieCard genre={obj.genre_ids} movie={obj} key={i}></MovieCard>
         )
 })
 
 const resultsPopular = popular.map((obj, i) => {
     return (
-            <MovieCard movie={obj} key={i}></MovieCard>
+            <MovieCard genre={obj.genre_ids} movie={obj} key={i}></MovieCard>
         )
 })
 
 const resultsUpcoming = upcoming.map((obj, i) => {
     return (
-            <MovieCard movie={obj} key={i}></MovieCard>
+            <MovieCard genre={obj.genre_ids} movie={obj} key={i}></MovieCard>
         )
 })
+
+function SampleNextArrow(props) {
+    const { className, style, onClick } = props;
+    return (
+      <div
+        className="slick-arrow"
+        style={{ ...style, right:"0", top:"0" }}
+        onClick={onClick}
+      />
+    );
+  }
+  
+  function SamplePrevArrow(props) {
+    const { className, style, onClick } = props;
+    return (
+      <div
+        className="slick-arrow"
+        style={{ ...style, left:"0", top:"0" }}
+        onClick={onClick}
+      />
+    );
+  }
+
   var settings = {
     dots: false,
-    infinite: false,
+    infinite: true,
     speed: 500,
     slidesToShow: 6,
     slidesToScroll: 4,
     initialSlide: 0,
     adaptiveHeight: true,
+    nextArrow: <SampleNextArrow />,
+    prevArrow: <SamplePrevArrow />,
     responsive: [
       {
         breakpoint: 1024,

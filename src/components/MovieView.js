@@ -7,22 +7,34 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import MovieCard from "./MovieCard";
 import YouTube from "react-youtube";
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
 
 
 const MovieView = () => {
     const { id } = useParams()
-    const [movieDetails, setMovieDetails] = useState({})
     const [isLoading, setIsLoading] = useState(true)
     const [recommended, setRecommended] = useState([])
     const [video, setVideo] = useState([])
+    const [movieDetails, setMovieDetails] = useState({})
     const [provider, setProvider] = useState([])
+    const [providerBuy, setProviderBuy] = useState([])
+    const [providerRent, setProviderRent] = useState([])
+    const [providerFlat, setProviderFlat] = useState([])
+    const [gen, setGenres] = useState([])
+    const [runtime, setRuntime] = useState('');
+    const arrowLeft = <FontAwesomeIcon icon={faChevronLeft} />
+    const arrowRight = <FontAwesomeIcon icon={faChevronRight} />
 
     const urlMovieDetails = `https://api.themoviedb.org/3/movie/${id}?append_to_response=videos&language=en-US'`;
     const urlRecommended = `https://api.themoviedb.org/3/movie/${id}/similar?language=en-US&page=1`;
     const urlVideos = `https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`;
     const urlProvider = `https://api.themoviedb.org/3/movie/${id}/watch/providers`;
 
+
+
+    
     const options = {
         method: 'GET',
         headers: {
@@ -46,33 +58,76 @@ const MovieView = () => {
             setIsLoading(false);
             setRecommended(dataRecommended.results);
             setVideo(dataVideos.results);
-            setProvider(dataProvider);
-            console.log(dataMovieDetails);
-            console.log(dataProvider.results.CA);
+            setProvider(dataProvider.results.CA);
+            setProviderBuy(dataProvider.results.CA.buy);
+            setProviderRent(dataProvider.results.CA.rent);
+            setProviderFlat(dataProvider.results.CA.flatrate);
+            setGenres(dataMovieDetails.genres);
 
-        });
+            const runtimeInMinutes = dataMovieDetails.runtime;
+            const formattedRuntime = convertToHoursAndMinutes(runtimeInMinutes);
+            setRuntime(formattedRuntime);
+
+        })
+        .catch(err => console.error('error:' + err));
     }, [id]);
 
-  const resultsRecommended = recommended.map((obj, i) => {
-    return (
-            <MovieCard movie={obj} key={i}></MovieCard>
-        )
+    const convertToHoursAndMinutes = (minutes) => {
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+      return `${hours}h ${remainingMinutes}m`;
+    };
+  
+
+    const renderGenres = gen? (gen.map((gen, i) => {
+       return (
+               `${gen.name}, `
+              )
+               })
+              ) : null;
+
+              const resultsProvidersFlat = providerFlat ? (
+                providerFlat.map((obj, i) => {
+                  const pathProviderFlat = `https://media.themoviedb.org/t/p/original${obj.logo_path}`;
+                  return (
+                    <img key={i} src={pathProviderFlat} alt={`Provider ${i + 1}`} />
+                  );
+                })
+              ) : null;
+
+          const resultsProvidersBuy = providerBuy ? (
+            providerBuy.map((obj, i) => {
+              const pathProviderBuy = `https://media.themoviedb.org/t/p/original${obj.logo_path}`;
+              return (
+                <img key={i} src={pathProviderBuy} alt={`Provider ${i + 1}`} />
+              );
+            })
+          ) : null;
+          
+ 
+
+          const resultsProvidersRent = providerRent ? (
+            providerRent.map((obj, i) => {
+              const pathProviderRent = `https://media.themoviedb.org/t/p/original${obj.logo_path}`;
+              return (
+                <img key={i} src={pathProviderRent} alt={`Provider ${i + 1}`} />
+              );
+            })
+          ) : null;
+
+ const resultsRecommended = recommended.map((obj, i) => {
+  return (
+          <MovieCard genre={obj.genre_ids} movie={obj} key={i}></MovieCard>
+      )
 })
 
-// const resultsProviders = provider.map((obj, i) => {
-//   return (
-//           <ul>
-//             <li key={i}>{obj}</li>
-//           </ul>
-//       )
-// })
 
 function SampleNextArrow(props) {
   const { className, style, onClick } = props;
   return (
     <div
-      className={className}
-      style={{ ...style, display: "grid", background: "rgba(0,0,0,0.9)", height: "100%", borderRadius:"0", alignItems:"center", position:"absolute" }}
+      className="slick-arrow"
+      style={{ ...style, right:"0", top:"0" }}
       onClick={onClick}
     />
   );
@@ -82,8 +137,8 @@ function SamplePrevArrow(props) {
   const { className, style, onClick } = props;
   return (
     <div
-      className={className}
-      style={{ ...style, display: "grid", background: "rgba(0,0,0,0.9)", height: "100%", borderRadius:"0", alignItems:"center" }}
+      className="slick-arrow"
+      style={{ ...style, left:"0", top:"0" }}
       onClick={onClick}
     />
   );
@@ -96,8 +151,8 @@ var settings = {
     slidesToShow: 6,
     slidesToScroll: 4,
     initialSlide: 0,
-    adaptiveHeight: true,
-    nextArrow: <FontAwesomeIcon icon="fa-solid fa-chevron-right" />,
+    adaptiveHeight: false,
+    nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
     responsive: [
     
@@ -127,7 +182,12 @@ var settings = {
       }
     ]
   };
+  function DateDisplay(){
+    const releaseDate = movieDetails.release_date
+    const dateString = new Date().getFullYear(releaseDate);
 
+    return dateString
+  }
   function renderMovieDetails() {
    
      const renderTrailer = () => {
@@ -183,11 +243,55 @@ var settings = {
             <Hero movie={movieDetails} trailer={renderTrailer()} posterUrl={posterPath} text={movieDetails.original_title} description={movieDetails.overview} backdrop={backdropUrl} />
             
             
-            <div className="homepage_sections">
-    <div className="container-lg">
+            <div className="sections">
+    <div className="container-md">
         <div className="row">
-            <h2>{movieDetails.original_title}</h2>
-            {/* {resultsProviders} */}
+          <div className="col-md-3">
+            <div className="poster_img sections">
+              <img src={posterPath} alt= "Poster" className="img-fluid shadow rounded" />
+            </div>
+            <div className="sections">
+              <h4>Genres</h4>
+              <p>{renderGenres}</p>
+            </div>
+            <div className="sections">
+              <h4>Runtime</h4>
+              <p>{runtime}</p>
+            </div>
+          </div>
+          <div className="col-md-9">
+            <div className="md-movie-info sections">
+              <h2>{movieDetails.original_title}</h2>
+              <p className="info-date">({ DateDisplay() })</p>
+            </div>
+            <div className="watch-now">
+            {resultsProvidersBuy &&
+              <div className="providers">
+                <div className="provider-title">
+                <h4>Buy</h4>
+              </div>  
+              {resultsProvidersBuy}
+              </div>      
+            }
+            {resultsProvidersRent &&
+              <div className="providers">
+                <div className="provider-title">
+                  <h4>Rent</h4>
+                </div>
+              {resultsProvidersRent}
+              </div>
+            }
+            {resultsProvidersFlat &&
+              <div className="providers">
+                <div className="provider-title">
+                <h4>Stream</h4>
+                </div>
+              {resultsProvidersFlat}
+              </div>        
+            }
+            </div>
+
+          </div>
         </div>
     </div>
 </div>   
@@ -197,6 +301,7 @@ var settings = {
     <div className="container-lg">
         <div className="row">
             <h2>You May Also Like</h2>
+            
             <div className="slider-container ">
                 <Slider {...settings}>
                     {resultsRecommended}
