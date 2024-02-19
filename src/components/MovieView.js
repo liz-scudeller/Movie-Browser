@@ -23,15 +23,16 @@ const MovieView = () => {
     const [providerRent, setProviderRent] = useState([])
     const [providerFlat, setProviderFlat] = useState([])
     const [gen, setGenres] = useState([])
+    const [genIdName, setGenresIdName] = useState([])
     const [runtime, setRuntime] = useState('');
     const arrowLeft = <FontAwesomeIcon icon={faChevronLeft} />
     const arrowRight = <FontAwesomeIcon icon={faChevronRight} />
 
+    const urlGenIdName = 'https://api.themoviedb.org/3/genre/movie/list?language=en';
     const urlMovieDetails = `https://api.themoviedb.org/3/movie/${id}?append_to_response=videos&language=en-US'`;
     const urlRecommended = `https://api.themoviedb.org/3/movie/${id}/similar?language=en-US&page=1`;
     const urlVideos = `https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`;
     const urlProvider = `https://api.themoviedb.org/3/movie/${id}/watch/providers`;
-
 
 
     
@@ -48,22 +49,24 @@ const MovieView = () => {
             fetch(urlMovieDetails, options),
             fetch(urlRecommended, options),
             fetch(urlVideos,options),
-            fetch(urlProvider,options)
+            fetch(urlProvider,options),
+            fetch(urlGenIdName,options)
         ])
-        .then(([resMovieDetails, resRecommended, resVideos, resProvider])=>
-        Promise.all([resMovieDetails.json(), resRecommended.json(), resVideos.json(), resProvider.json()])
+        .then(([resMovieDetails, resRecommended, resVideos, resProvider, resGenIdName])=>
+        Promise.all([resMovieDetails.json(), resRecommended.json(), resVideos.json(), resProvider.json(), resGenIdName.json()])
         )
-        .then(([dataMovieDetails, dataRecommended, dataVideos, dataProvider]) => {
+        .then(([dataMovieDetails, dataRecommended, dataVideos, dataProvider, dataGenIdName]) => {
             setMovieDetails(dataMovieDetails);
             setIsLoading(false);
             setRecommended(dataRecommended.results);
             setVideo(dataVideos.results);
             setProvider(dataProvider.results.CA);
-            setProviderBuy(dataProvider.results.CA.buy);
-            setProviderRent(dataProvider.results.CA.rent);
-            setProviderFlat(dataProvider.results.CA.flatrate);
+            setProviderBuy(dataProvider.results.CA?.buy || []);
+            setProviderRent(dataProvider.results.CA?.rent || []);
+            setProviderFlat(dataProvider.results.CA?.flatrate || []);
             setGenres(dataMovieDetails.genres);
-
+            setGenresIdName(dataGenIdName.genres);
+            console.log(dataMovieDetails)
             const runtimeInMinutes = dataMovieDetails.runtime;
             const formattedRuntime = convertToHoursAndMinutes(runtimeInMinutes);
             setRuntime(formattedRuntime);
@@ -78,48 +81,39 @@ const MovieView = () => {
       return `${hours}h ${remainingMinutes}m`;
     };
   
+  
 
-    const renderGenres = gen? (gen.map((gen, i) => {
-       return (
-               `${gen.name}, `
-              )
-               })
-              ) : null;
+    const renderGenres = (gen) => gen ? gen.map((gen, i) => `${gen.name}, `) : null;
 
-              const resultsProvidersFlat = providerFlat ? (
-                providerFlat.map((obj, i) => {
-                  const pathProviderFlat = `https://media.themoviedb.org/t/p/original${obj.logo_path}`;
-                  return (
-                    <img key={i} src={pathProviderFlat} alt={`Provider ${i + 1}`} />
-                  );
-                })
-              ) : null;
+const renderProviders = (providers) => providers ? (
+  providers.map((obj, i) => {
+    const pathProvider = `https://media.themoviedb.org/t/p/original${obj.logo_path}`;
+    return <img key={i} src={pathProvider} alt={`Provider ${i + 1}`} />;
+  })
+) : null;
 
-          const resultsProvidersBuy = providerBuy ? (
-            providerBuy.map((obj, i) => {
-              const pathProviderBuy = `https://media.themoviedb.org/t/p/original${obj.logo_path}`;
-              return (
-                <img key={i} src={pathProviderBuy} alt={`Provider ${i + 1}`} />
-              );
-            })
-          ) : null;
+const resultsProvidersFlat = renderProviders(providerFlat);
+const resultsProvidersBuy = renderProviders(providerBuy);
+const resultsProvidersRent = renderProviders(providerRent);
+
+
+
+          const resultsRecommended = recommended.map((obj, i) => {
+            const genIds = obj.genre_ids;
+            let genName = "Unknown Genre";
           
- 
+            if (Array.isArray(genIdName)) {
+              const matchingGenre = genIdName.find((genre) => genIds.includes(genre.id));
+          
+              if (matchingGenre) {
+                genName = matchingGenre.name;
+              }
+            }
+          
+            return <MovieCard genre={genName} movie={obj} key={i}></MovieCard>;
+          });
 
-          const resultsProvidersRent = providerRent ? (
-            providerRent.map((obj, i) => {
-              const pathProviderRent = `https://media.themoviedb.org/t/p/original${obj.logo_path}`;
-              return (
-                <img key={i} src={pathProviderRent} alt={`Provider ${i + 1}`} />
-              );
-            })
-          ) : null;
 
- const resultsRecommended = recommended.map((obj, i) => {
-  return (
-          <MovieCard genre={obj.genre_ids} movie={obj} key={i}></MovieCard>
-      )
-})
 
 
 function SampleNextArrow(props) {
@@ -251,6 +245,10 @@ var settings = {
               <img src={posterPath} alt= "Poster" className="img-fluid shadow rounded" />
             </div>
             <div className="sections">
+              <h4>Status</h4>
+              <p>{movieDetails.status}</p>
+            </div>
+            <div className="sections">
               <h4>Genres</h4>
               <p>{renderGenres}</p>
             </div>
@@ -265,30 +263,53 @@ var settings = {
               <p className="info-date">({ DateDisplay() })</p>
             </div>
             <div className="watch-now">
-            {resultsProvidersBuy &&
+            {providerBuy && providerBuy.length > 0 ? (
               <div className="providers">
                 <div className="provider-title">
                 <h4>Buy</h4>
               </div>  
               {resultsProvidersBuy}
-              </div>      
-            }
-            {resultsProvidersRent &&
+              </div> 
+            ):(
+              <div>
+                 <div className="providers">
+                <div className="provider-title">
+                <h4>Buy</h4>
+              </div>  
+              <p>{movieDetails.original_title} is not available to buy</p>  
+              </div> 
+              </div>   
+            )}
+            {providerRent && providerRent.length > 0 ? (
               <div className="providers">
                 <div className="provider-title">
                   <h4>Rent</h4>
                 </div>
               {resultsProvidersRent}
               </div>
-            }
-            {resultsProvidersFlat &&
+            ):(
+              <div className="providers">
+                <div className="provider-title">
+                  <h4>Rent</h4>
+                </div>
+                <p>{movieDetails.original_title} is not available for rent</p>  
+              </div>
+            )}
+            {providerFlat && providerFlat.length > 0 ? (
               <div className="providers">
                 <div className="provider-title">
                 <h4>Stream</h4>
                 </div>
               {resultsProvidersFlat}
-              </div>        
-            }
+              </div> 
+            ):(
+              <div className="providers">
+                <div className="provider-title">
+                <h4>Stream</h4>
+                </div>
+                <p>{movieDetails.original_title} is not available for streaming</p>  
+              </div> 
+            )}
             </div>
 
           </div>

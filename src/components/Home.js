@@ -13,8 +13,11 @@ const Home = () => {
     const [nowPlaying, setNowPlaying] = useState([]);
     const [popular, setPopular] = useState([]);
     const [upcoming, setUpcoming] = useState([]);
+    const [genIdName, setGenresIdName] = useState([])
 
 
+
+    const urlGenIdName = 'https://api.themoviedb.org/3/genre/movie/list?language=en';
     const urlNowPlaying = 'https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1';
     const urlPopular = 'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1';
     const urlUpcoming = 'https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1';
@@ -30,39 +33,43 @@ useEffect(() => {
     Promise.all([
         fetch(urlNowPlaying, options),
         fetch(urlPopular, options),
-        fetch(urlUpcoming, options)
+        fetch(urlUpcoming, options),
+        fetch(urlGenIdName,options)
     ])
-    .then(([resNowPlaying, resPopular,resUpcoming])=>
-    Promise.all([resNowPlaying.json(), resPopular.json(), resUpcoming.json()])
+    .then(([resNowPlaying, resPopular,resUpcoming, resGenIdName])=>
+    Promise.all([resNowPlaying.json(), resPopular.json(), resUpcoming.json(), resGenIdName.json()])
     )
-    .then(([dataNowPlaying, dataPopular, dataUpcoming]) => {
+    .then(([dataNowPlaying, dataPopular, dataUpcoming, dataGenIdName]) => {
         setNowPlaying(dataNowPlaying.results);
         setPopular(dataPopular.results);
         setUpcoming(dataUpcoming.results);
-        console.log(dataNowPlaying.results)
+        setGenresIdName(dataGenIdName.genres);
     }) .catch(err => console.error('error:' + err));
     
 }, []);
 
+const generateMovieResults = (movies, genIdName) => {
+  return movies.map((obj, i) => {
+    const genIds = obj.genre_ids;
+    let genName = "Unknown Genre";
+
+    if (Array.isArray(genIdName)) {
+      const matchingGenre = genIdName.find((genre) => genIds.includes(genre.id));
+
+      if (matchingGenre) {
+        genName = matchingGenre.name;
+      }
+    }
+
+    return <MovieCard genre={genName} movie={obj} key={i}></MovieCard>;
+  });
+};
+
+const resultsNowPlaying = generateMovieResults(nowPlaying, genIdName);
+const resultsPopular = generateMovieResults(popular, genIdName);
+const resultsUpcoming = generateMovieResults(upcoming, genIdName);
 
 
-  const resultsNowPlaying = nowPlaying.map((obj, i) => {
-    return (
-            <MovieCard genre={obj.genre_ids} movie={obj} key={i}></MovieCard>
-        )
-})
-
-const resultsPopular = popular.map((obj, i) => {
-    return (
-            <MovieCard genre={obj.genre_ids} movie={obj} key={i}></MovieCard>
-        )
-})
-
-const resultsUpcoming = upcoming.map((obj, i) => {
-    return (
-            <MovieCard genre={obj.genre_ids} movie={obj} key={i}></MovieCard>
-        )
-})
 
 function SampleNextArrow(props) {
     const { className, style, onClick } = props;

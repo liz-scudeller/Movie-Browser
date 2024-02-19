@@ -8,7 +8,6 @@ const MovieCard = ({ movie, genre }) => {
         posterUrl = NoImageAvailable
     }
     const detailUrl = `/movies/${movie.id}`  
-    const [genres, setGenres] = useState([])
 
 
     
