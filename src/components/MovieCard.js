@@ -21,18 +21,6 @@ const scrollToTop = () =>{
   }; 
 
         return(
-        //  <div className="rectangle-container">
-        //         <div className="card">
-        //             <img src={posterUrl} className="card-img-top" alt={movie.original_title} />
-        //          <div className="card-body">
-        //              <h5 className="card-title">{movie.original_title}</h5>
-        //              <p>{movie.release_date}</p>
-        //              <p>{movie.genres}</p>
-        //              <Link to={detailUrl} className="btn btn-primary">Show Details</Link>
-        //             </div>
-        //         </div>
-        //     </div>
-
 
 <Link onClick={scrollToTop()} className="movie-cards" to={detailUrl} >
 <div className="rectangle-container">

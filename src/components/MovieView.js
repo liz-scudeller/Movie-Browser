@@ -176,12 +176,17 @@ var settings = {
       }
     ]
   };
-  function DateDisplay(){
-    const releaseDate = movieDetails.release_date
-    const dateString = new Date().getFullYear(releaseDate);
+  function DateDisplay() {
+    const releaseDate = movieDetails.release_date;
+    
+    if (releaseDate) {
+        const dateString = new Date(releaseDate).getFullYear();
+        return dateString;
+    } else {
+        return "N/A"; // Or handle the case where releaseDate is not available
+    }
+}
 
-    return dateString
-  }
   function renderMovieDetails() {
    
      const renderTrailer = () => {
@@ -246,11 +251,12 @@ var settings = {
             </div>
             <div className="sections">
               <h4>Status</h4>
-              <p>{movieDetails.status}</p>
+              
+              <p>{movieDetails.status} ({movieDetails.release_date})</p>
             </div>
             <div className="sections">
               <h4>Genres</h4>
-              <p>{renderGenres}</p>
+              <p>{renderGenres(gen)}</p>
             </div>
             <div className="sections">
               <h4>Runtime</h4>

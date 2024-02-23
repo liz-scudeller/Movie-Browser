@@ -1,7 +1,10 @@
 import Hero from "./Hero";
 import MovieCard from "./MovieCard"
+import HeroHome from "./HeroHome"
 import {useEffect, useState} from 'react';
 import React from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons'
 
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -78,7 +81,11 @@ function SampleNextArrow(props) {
         className="slick-arrow"
         style={{ ...style, right:"0", top:"0" }}
         onClick={onClick}
-      />
+      >
+        <div className="arrow-icon">
+          <FontAwesomeIcon icon={faAngleRight} size="2x" />
+        </div>
+      </div>
     );
   }
   
@@ -89,7 +96,11 @@ function SampleNextArrow(props) {
         className="slick-arrow"
         style={{ ...style, left:"0", top:"0" }}
         onClick={onClick}
-      />
+      >
+        <div className="arrow-icon">
+          <FontAwesomeIcon icon={faAngleRight} size="2x" rotation={180} />
+        </div>
+      </div>
     );
   }
 
@@ -133,11 +144,12 @@ function SampleNextArrow(props) {
 return(
     <>
 
-
 <div className="homepage_sections">
+      <HeroHome />
         {resultsPopular &&
     <div className="container-lg">
         <div className="row">
+
             <h2>Popular</h2>
             <div className="slider-container ">
                 <Slider {...settings}>

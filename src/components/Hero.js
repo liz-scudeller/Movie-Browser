@@ -23,7 +23,7 @@ const Hero = ({text, backdrop, description, posterUrl, trailer}) => {
     return(
         <main>
             <div className="bg-dark text-white p-5 hero-container hero-backdrop"
-            style={{backgroundImage: `linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)), url(${backdrop})`}}>
+            style={{backgroundImage: `linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,1) 100%), url(${backdrop})`}}>
                     {openTrailer? 
                         <div>
                             {trailer}
