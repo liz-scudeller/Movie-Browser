@@ -7,7 +7,7 @@ const MovieTrailer = () => {
     const { id } = useParams()
     const [movieTrailer, setMovieTrailer] = useState({})
     const [isLoading, setIsLoading] = useState(true)
-    const [movieVideosList, setMovieVideosList] = useState([])
+    const [movieVideosList] = useState([])
 
     const fetch = require('node-fetch');
 

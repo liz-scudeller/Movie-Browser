@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import NoImageAvailable from '../No_Image_Available.jpg'
-import { useState, useEffect } from "react";
 import useMovieDetails from "./useMovieDetails";
 
 

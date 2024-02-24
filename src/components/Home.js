@@ -1,11 +1,9 @@
-import Hero from "./Hero";
 import MovieCard from "./MovieCard"
 import HeroHome from "./HeroHome"
 import { useEffect, useState } from 'react';
 import React from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleRight } from '@fortawesome/free-solid-svg-icons'
-import useMovieDetails from './useMovieDetails';
 
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";

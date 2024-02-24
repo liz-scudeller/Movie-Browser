@@ -80,10 +80,7 @@ const useMovieDetails = (id) => {
     movieDetails,
     recommended,
     video,
-    provider,
-    providerBuy,
-    providerRent,
-    providerFlat,
+
     genres,
     genresIdName,
     runtime,

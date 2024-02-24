@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import useMovieDetails from "./useMovieDetails";
@@ -14,8 +13,16 @@ const HeroHome = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const { isLoading, runtime: selectedMovieRuntime } = useMovieDetails(selectedMovie?.id);
-  const { isLoading2, movieDetails } = useMovieDetails(selectedMovie?.id);
+  const { movieDetails } = useMovieDetails(selectedMovie?.id);
 
+
+  useEffect(() => {
+    if (selectedMovie?.id) {
+      // Use movieDetails data as needed
+      console.log(movieDetails);
+    }
+  }, [selectedMovie?.id, movieDetails]);
+  
   const renderGenres = () => {
     if (isLoading) {
       return "Loading genres..."; // Handle loading state
