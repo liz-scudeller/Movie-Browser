@@ -1,40 +1,32 @@
 import { useState, useEffect } from "react";
-import YouTube from "react-youtube";
 
-const Hero = ({text, backdrop, description, posterUrl, trailer}) => {
-
-    // const [showButton, setShowButton] = useState(false)
-    const [openTrailer, setOpenTrailer] = useState(true)   
-     
-    
-    // const handleTrailer = () => {
-    //     return(
-    //         setOpenTrailer(current => !current)
-    //     )      
-    // }
-
-    // useEffect( () => {
-    //     console.log(openTrailer);
-    //     setShowButton(true);
-
-    // }, [openTrailer]);
+const Hero = ({ text, backdrop, description, posterUrl, trailer }) => {
+    const [openTrailer, setOpenTrailer] = useState(true)
 
 
-    return(
+    useEffect(() => {
+        if (trailer === null || trailer === undefined) {
+            setOpenTrailer(false);
+        }
+        else {
+            setOpenTrailer(true);
+        }
+    }, [trailer]);
+    return (
         <main>
             <div className="bg-dark text-white p-5 hero-container hero-backdrop"
-            style={{backgroundImage: `linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,1) 100%), url(${backdrop})`}}>
-                    {openTrailer? 
-                        <div>
-                            {trailer}
-                            <button className="button close-video" onClick={() => setOpenTrailer(false)}>Close</button>
-                        </div> 
-                        : 
-                        <div className="hero-content">
-                            {/* <div className="poster_img">
+                style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,1) 100%), url(${backdrop})` }}>
+                {openTrailer ?
+                    <div>
+                        {trailer}
+                        <button className="button close-video" onClick={() => setOpenTrailer(false)}>Close</button>
+                    </div>
+                    :
+                    <div className="hero-content">
+                        {/* <div className="poster_img">
                                 <img src={posterUrl} alt= "Poster" className="img-fluid shadow rounded" />
                             </div> */}
-                            {trailer ? 
+                        {trailer ?
                             <div>
                                 <h1>{text}</h1>
                                 <p>{description}</p>
@@ -46,14 +38,14 @@ const Hero = ({text, backdrop, description, posterUrl, trailer}) => {
                                 <p>{description}</p>
                                 <p className="highlight">Sorry, no trailer available</p>
                             </div>
-                            }
-                        </div>                   
-                    }
+                        }
+                    </div>
+                }
 
 
-             </div>
+            </div>
         </main>
-        
+
     )
 }
 export default Hero;

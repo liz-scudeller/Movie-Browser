@@ -3,6 +3,9 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import useMovieDetails from "./useMovieDetails";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlay } from '@fortawesome/free-solid-svg-icons'
 
 
 
@@ -10,10 +13,21 @@ const HeroHome = () => {
   const [topRated, setTopRated] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { isLoading, runtime: selectedMovieRuntime } = useMovieDetails(selectedMovie?.id);
+  const { isLoading2, movieDetails } = useMovieDetails(selectedMovie?.id);
+
+  const renderGenres = () => {
+    if (isLoading) {
+      return "Loading genres..."; // Handle loading state
+    }
   
-
-  const { isLoading, runtime } = useMovieDetails(selectedMovie?.id);
-
+    if (movieDetails.genres && movieDetails.genres.length > 0) {
+      const genreNames = movieDetails.genres.map((genre) => genre.name);
+      return genreNames.join(", ");
+    }
+  
+    return "Genres not available";
+  };
 
   const url =
     "https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1&region=Canada";
@@ -31,50 +45,46 @@ const HeroHome = () => {
       .then((res) => res.json())
       .then((data) => {
         setTopRated(data.results);
-        console.log(data.results)
       })
       .catch((err) => console.error("error:" + err));
   }, [url]);
 
   useEffect(() => {
-    // Set the initial selected movie when topRated has data
     if (topRated.length > 0 && !selectedMovie) {
       setSelectedMovie(topRated[0]);
     }
   }, [topRated, selectedMovie]);
-  
-  
+
+
   const getPrevIndices = () => {
     const currentIndex = topRated.findIndex(
       (movie) => movie.id === selectedMovie.id
-      );
-      const prevIndex1 = (currentIndex - 2 + topRated.length) % topRated.length;
-      const prevIndex2 = (currentIndex - 1 + topRated.length) % topRated.length;
-      return [prevIndex1, prevIndex2];
-    };
-    
-    const getNextIndices = () => {
-      const currentIndex = topRated.findIndex(
-        (movie) => movie.id === selectedMovie.id
-        );
-        const nextIndex1 = (currentIndex + 2) % topRated.length;
-        const nextIndex2 = (currentIndex + 1) % topRated.length;
-        return [nextIndex1, nextIndex2];
-      };
-      
-      
-        const handleMovieClick = (movie) => {
-          const newIndex = topRated.findIndex((m) => m.id === movie.id);
-          setCurrentIndex(newIndex);
-          setSelectedMovie(movie);
+    );
+    const prevIndex1 = (currentIndex - 2 + topRated.length) % topRated.length;
+    const prevIndex2 = (currentIndex - 1 + topRated.length) % topRated.length;
+    return [prevIndex1, prevIndex2];
+  };
+
+  const getNextIndices = () => {
+    const currentIndex = topRated.findIndex(
+      (movie) => movie.id === selectedMovie.id
+    );
+    const nextIndex1 = (currentIndex + 2) % topRated.length;
+    const nextIndex2 = (currentIndex + 1) % topRated.length;
+    return [nextIndex1, nextIndex2];
+  };
 
 
-        };
-        
+  const handleMovieClick = (movie) => {
+    const newIndex = topRated.findIndex((m) => m.id === movie.id);
+    setCurrentIndex(newIndex);
+    setSelectedMovie(movie);
+  };
 
-        
-      const renderTopRated = topRated.map((obj, i) => {
-        var posterPath = `https://image.tmdb.org/t/p/w500${obj.poster_path}`;
+
+
+  const renderTopRated = topRated.map((obj, i) => {
+    var posterPath = `https://image.tmdb.org/t/p/w500${obj.poster_path}`;
     if (obj.poster_path === null) {
       posterPath = "NoImageAvailable";
     }
@@ -107,24 +117,11 @@ const HeroHome = () => {
     }
   }
 
-  const convertToHoursAndMinutes = (min) => {
-    
-    if (min) {
-      const hours = Math.floor(min / 60);
-      const remainingMinutes = min % 60;
-      return `${hours}h ${remainingMinutes}m`;
-    } else {
-      return "N/A";
-    }
-  };
-
-  
-
   return (
     <>
       {renderTopRated && (
         <div
-          className="container-lg home-hero"
+          className={`container-lg home-hero`}
           style={{
             backgroundImage: `linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,1) 100%), url(${backdropUrl})`,
             backgroundSize: "cover",
@@ -132,6 +129,7 @@ const HeroHome = () => {
             backgroundPosition: "top",
             minHeight: "600px",
             position: "relative",
+
           }}
         >
           <div className="container">
@@ -139,58 +137,66 @@ const HeroHome = () => {
               <div className="home-hero-content">
                 <div className="">
                   <h3>{selectedMovie ? selectedMovie.title : "Title Placeholder"}</h3>
-                  <p>
-                    {selectedMovie ? `${DateDisplay()} - ${runtime}` : "Release date not available"}
-                  </p>
+                  <div className="hero-content-details">
+                    <div className="flex-col">
+                      <p>
+                        {selectedMovie ? `${DateDisplay()} - ${selectedMovieRuntime} - ${renderGenres()}` : "Release date not available"}
+                      </p>
+                    <Link to={selectedMovie ? `/movies/${selectedMovie.id}` : "#"} className="btn">
+                      <FontAwesomeIcon icon={faPlay} size="1x" className="mr-2" />Watch Now
+                    </Link>
+                    </div>
+
+                  </div>
                 </div>
               </div>
               <div className="arrows">
-                
-              {/* Previous Movie Arrows */}
-              {selectedMovie && topRated.length > 1 && (
-                <>
-                  {getPrevIndices().map((prevIndex, index) => (
-                    <div
-                      key={index}
-                      className={`prev-movie-arrow-${index} prev-movie-arrow`}
-                      onClick={() => handleMovieClick(topRated[prevIndex])}
-                    >
-                      <img
-                        src={`https://image.tmdb.org/t/p/w500${topRated[prevIndex].poster_path}`}
-                        alt={`Previous Movie ${index + 1}`}
-                      />
-                    </div>
-                  ))}
-                </>
-              )}
 
-              {/* Next Movie Arrows */}
-              {selectedMovie && topRated.length > 1 && (
-  <>
-    {getNextIndices().map((nextIndex, index) => (
-      <div
-        key={index}
-        className={`next-movie-arrow-${index} next-movie-arrow`}
-        onClick={() => handleMovieClick(topRated[nextIndex])}
+                {/* Previous Movie Arrows */}
+                {selectedMovie && topRated.length > 1 && (
+                  <>
+                    {getPrevIndices().map((prevIndex, index) => (
+                      <div
+                        key={index}
+                        className={`prev-movie-arrow-${index} prev-movie-arrow`}
+                        onClick={() => handleMovieClick(topRated[prevIndex])}
+                      >
+                        <img
+                          src={`https://image.tmdb.org/t/p/w500${topRated[prevIndex].poster_path}`}
+                          alt={`Previous Movie ${index + 1}`}
+                        />
+                      </div>
+                    ))}
+                  </>
+                )}
 
-      >
-        <img
-          src={`https://image.tmdb.org/t/p/w500${topRated[nextIndex].poster_path}`}
-          alt={`Next Movie ${index + 1}`}
-        />
-      </div>
-    ))}
-  </>
-)}
-            </div>
+                {/* Next Movie Arrows */}
+                {selectedMovie && topRated.length > 1 && (
+                  <>
+                    {getNextIndices().map((nextIndex, index) => (
+                      <div
+                        key={index}
+                        className={`next-movie-arrow-${index} next-movie-arrow`}
+                        onClick={() => handleMovieClick(topRated[nextIndex])}
+
+                      >
+                        <img
+                          src={`https://image.tmdb.org/t/p/w500${topRated[nextIndex].poster_path}`}
+                          alt={`Next Movie ${index + 1}`}
+                        />
+                      </div>
+                    ))}
+                  </>
+                )}
               </div>
+            </div>
           </div>
         </div>
       )}
     </>
   );
-s
+  s
 
-    };
-    
-    export default HeroHome;
+};
+
+export default HeroHome;

@@ -29,6 +29,11 @@ const useMovieDetails = (id) => {
   };
 
   useEffect(() => {
+
+    if (typeof id === 'undefined') {
+      return;
+    }
+
     Promise.all([
       fetch(urlMovieDetails, options),
       fetch(urlRecommended, options),
@@ -57,9 +62,10 @@ const useMovieDetails = (id) => {
         setGenres(dataMovieDetails.genres);
         setGenresIdName(dataGenIdName.genres);
         const runtimeInMinutes = dataMovieDetails.runtime;
-        const formattedRuntime = convertToHoursAndMinutes(runtimeInMinutes);
-        setRuntime(formattedRuntime);
-      })
+        const formattedRuntime = runtimeInMinutes
+          ? convertToHoursAndMinutes(runtimeInMinutes)
+          : 'N/A';
+        setRuntime(formattedRuntime);      })
       .catch((err) => console.error('error:' + err));
   }, [id]);
 

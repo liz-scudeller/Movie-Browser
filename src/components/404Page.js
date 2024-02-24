@@ -1,9 +1,9 @@
 import Hero from "./Hero";
 
 const PageNotFound = () => {
-    return(
+    return (
         <>
-        <Hero text="Page Not Found"/>
+            <Hero text="Page Not Found" />
         </>
     )
 }
