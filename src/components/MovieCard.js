@@ -40,7 +40,7 @@ const MovieCard = ({ movie, genre }) => {
             <div className="rectangle-container">
                 <div className="card">
                     <img src={posterUrl} className="card-img-top" alt={movie.original_title} />
-                    <Link className="add-watchlist">Add to Watchlist</Link>
+                    {/* <Link className="add-watchlist">Add to Watchlist</Link> */}
                     <div className="card-body">
                         <div>
                             <h5 className="card-title">{movie.original_title}</h5>
