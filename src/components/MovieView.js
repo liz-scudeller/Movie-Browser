@@ -64,7 +64,6 @@ const MovieView = () => {
         setProviderFlat(dataProvider.results.CA?.flatrate || []);
         setGenres(dataMovieDetails.genres);
         setGenresIdName(dataGenIdName.genres);
-        console.log(dataMovieDetails)
         const runtimeInMinutes = dataMovieDetails.runtime;
         const formattedRuntime = convertToHoursAndMinutes(runtimeInMinutes);
         setRuntime(formattedRuntime);

@@ -19,7 +19,6 @@ const HeroHome = () => {
   useEffect(() => {
     if (selectedMovie?.id) {
       // Use movieDetails data as needed
-      console.log(movieDetails);
     }
   }, [selectedMovie?.id, movieDetails]);
   
@@ -88,7 +87,16 @@ const HeroHome = () => {
     setSelectedMovie(movie);
   };
 
+ useEffect(() => {
+    // Set up interval to change movie every 2 seconds
+    const intervalId = setInterval(() => {
+      const nextIndex = (currentIndex + 1) % topRated.length;
+      handleMovieClick(topRated[nextIndex]);
+    }, 4000);
 
+    // Clear interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [currentIndex, topRated]);
 
   const renderTopRated = topRated.map((obj, i) => {
     var posterPath = `https://image.tmdb.org/t/p/w500${obj.poster_path}`;
