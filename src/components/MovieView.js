@@ -23,16 +23,17 @@ const MovieView = () => {
   const [providerFlat, setProviderFlat] = useState([])
   const [gen, setGenres] = useState([])
   const [genIdName, setGenresIdName] = useState([])
+  const [cast, setCast] = useState([])
   const [runtime, setRuntime] = useState('');
 
 
   const urlGenIdName = 'https://api.themoviedb.org/3/genre/movie/list?language=en';
-  const urlMovieDetails = `https://api.themoviedb.org/3/movie/${id}?append_to_response=videos&language=en-US'`;
+  const urlMovieDetails = `https://api.themoviedb.org/3/movie/${id}?append_to_response=videos,credits&language=en-US`;
   const urlRecommended = `https://api.themoviedb.org/3/movie/${id}/similar?language=en-US&page=1`;
   const urlVideos = `https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`;
   const urlProvider = `https://api.themoviedb.org/3/movie/${id}/watch/providers`;
 
-
+  // https://image.tmdb.org/t/p/w200/7UIm9RoBnlqS1uLlbElAY8urdWD.jpg (cast image)
 
   const options = {
     method: 'GET',
@@ -64,10 +65,10 @@ const MovieView = () => {
         setProviderFlat(dataProvider.results.CA?.flatrate || []);
         setGenres(dataMovieDetails.genres);
         setGenresIdName(dataGenIdName.genres);
+        setCast(dataMovieDetails.credits.cast)
         const runtimeInMinutes = dataMovieDetails.runtime;
         const formattedRuntime = convertToHoursAndMinutes(runtimeInMinutes);
         setRuntime(formattedRuntime);
-
       })
       .catch(err => console.error('error:' + err));
   }, [id]);
@@ -79,7 +80,22 @@ const MovieView = () => {
   };
 
 
+const renderCast = (cast) => cast ? (
+  cast.map((obj, i) => {
+    const pathCast = obj.profile_path ? `https://image.tmdb.org/t/p/w200/${obj.profile_path}` : NoImageAvailable;
+    
+    return (
+      <div key={i}>
+        <img className="cast-image" src={pathCast} alt={obj.name} />
+        <p className="text-center">{obj.name}</p>
+      </div>
+    );
+  })
+) : null;
 
+
+  const resultsCast = renderCast(cast);
+  
   const renderGenres = (gen) => gen ? gen.map((gen, i) => gen.name).join(', ') : null;
 
   const renderProviders = (providers) => providers ? (
@@ -175,12 +191,52 @@ const MovieView = () => {
       {
         breakpoint: 480,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 2,
           slidesToScroll: 1
         }
       }
     ]
   };
+
+  var settingscast = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 7,
+    slidesToScroll: 4,
+    initialSlide: 0,
+    adaptiveHeight: false,
+    nextArrow: <SampleNextArrow />,
+    prevArrow: <SamplePrevArrow />,
+    responsive: [
+
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 3,
+          infinite: false,
+          dots: false
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 2,
+          initialSlide: 1
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 2
+        }
+      }
+    ]
+  };
+
   function DateDisplay() {
     const releaseDate = movieDetails.release_date;
 
@@ -253,8 +309,12 @@ const MovieView = () => {
           <div className="sections">
             <div className="container-md">
               <div className="row">
+              <div className="md-movie-info sections">
+                    <h2 className="movie-title">{movieDetails.original_title}</h2>
+                    <p className="info-date">({DateDisplay()})</p>
+                  </div>
                 <div className="col-md-3">
-                  <div className="poster_img sections">
+                  <div className="poster-img sections">
                     <img src={posterPath} alt="Poster" className="img-fluid shadow rounded" />
                   </div>
                   <div className="sections">
@@ -272,10 +332,6 @@ const MovieView = () => {
                   </div>
                 </div>
                 <div className="col-md-9">
-                  <div className="md-movie-info sections">
-                    <h2>{movieDetails.original_title}</h2>
-                    <p className="info-date">({DateDisplay()})</p>
-                  </div>
                   <div className="watch-now">
                     {providerBuy && providerBuy.length > 0 ? (
                       <div className="providers">
@@ -325,13 +381,23 @@ const MovieView = () => {
                       </div>
                     )}
                   </div>
-
+                  {cast ? 
+                  <div className="slider-container sections">
+                    <h4>Cast</h4>
+                  <Slider {...settingscast}>
+                    {resultsCast}
+                  </Slider>
+                </div>
+                  :
+                  null
+                  }
+                  
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="homepage_sections">
+          <div className="homepage-sections">
             {resultsRecommended &&
               <div className="container-lg">
                 <div className="row">

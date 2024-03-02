@@ -146,7 +146,7 @@ const Home = () => {
   return (
     <>
 
-      <div className="homepage_sections">
+      <div className="homepage-sections">
         <HeroHome />
         {resultsPopular &&
           <div className="container-lg">
@@ -163,7 +163,7 @@ const Home = () => {
         }
       </div>
 
-      <div className="homepage_sections">
+      <div className="homepage-sections">
         {resultsNowPlaying &&
           <div className="container-lg">
             <div className="row">
@@ -177,7 +177,7 @@ const Home = () => {
           </div>
         }
       </div>
-      <div className="homepage_sections">
+      <div className="homepage-sections">
         {resultsUpcoming &&
           <div className="container-lg">
             <div className="row">

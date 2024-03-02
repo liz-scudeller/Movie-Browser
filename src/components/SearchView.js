@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import NoImageAvailable from '../No_Image_Available.jpg'
+import { useState } from "react";
 
 
-const MovieCard = ({ movie }) => {
+const MovieCard = ({ movie, onResultClick }) => {
     var posterUrl = `https://image.tmdb.org/t/p/w500${movie.poster_path}`
     if (movie.poster_path === null) {
         posterUrl = NoImageAvailable
@@ -11,7 +12,7 @@ const MovieCard = ({ movie }) => {
 
     return (
 
-        <Link to={detailUrl} >
+        <Link to={detailUrl} onClick={onResultClick}>
             <div className="result-cards">
                 <img src={posterUrl} className="card-img-top" alt={movie.original_title} />
                 <div className="cards-info">
@@ -24,13 +25,17 @@ const MovieCard = ({ movie }) => {
 }
 
 
-const SearchView = ({ keyword, searchResults }) => {
-
+const SearchView = ({ keyword, searchResults, onResultClick }) => {
     const resultsHTML = searchResults.map((obj, i) => {
         return (
-            <MovieCard movie={obj} key={i}></MovieCard>
+            <MovieCard 
+            movie={obj} 
+            key={i}
+            onResultClick={onResultClick}
+            ></MovieCard>
         )
     })
+
 
 
     if (resultsHTML != 0 || keyword === "") {

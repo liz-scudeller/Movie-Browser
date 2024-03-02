@@ -29,13 +29,15 @@ const MovieCard = ({ movie, genre }) => {
 
     const scrollToTop = () => {
         window.scrollTo({
-            top: 0
+          top: 0,
+          behavior: "smooth",
         });
-    };
+      };
+      
 
     return (
 
-        <Link onClick={scrollToTop()} className="movie-cards" to={detailUrl} >
+        <Link onClick={scrollToTop} className="movie-cards" to={detailUrl} >
             <div className="rectangle-container">
                 <div className="card">
                     <img src={posterUrl} className="card-img-top" alt={movie.original_title} />

@@ -23,7 +23,7 @@ const Hero = ({ text, backdrop, description, posterUrl, trailer }) => {
                     </div>
                     :
                     <div className="hero-content">
-                        {/* <div className="poster_img">
+                        {/* <div className="poster-img">
                                 <img src={posterUrl} alt= "Poster" className="img-fluid shadow rounded" />
                             </div> */}
                         {trailer ?

@@ -101,7 +101,7 @@ const useMovieDetails = (id) => {
   const [runtime, setRuntime] = useState('');
   
 
-  const urlMovieDetails = `https://api.themoviedb.org/3/movie/${id}?append_to_response=videos&language=en-US`;
+  const urlMovieDetails = `https://api.themoviedb.org/3/movie/${id}&language=en-US`;
   const urlGenIdName = 'https://api.themoviedb.org/3/genre/movie/list?language=en';
 
   const options = {

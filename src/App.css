@@ -8,6 +8,9 @@ ul,li,p{
     margin: 0;
     padding: 0;
 }
+.text-center{
+    text-align: center;
+}
 .navbar{
     background-color: transparent;
     position: absolute;
@@ -35,8 +38,26 @@ ul,li,p{
     flex-wrap: wrap;
     align-content: flex-end;
 }
+@media (max-width: 900px){
+    .hero-container{
+        min-height: 400px!important;
+        padding-top: 100px!important;
+    }
+    .hero-content{
+        max-width: 90%!important;
+    }
+}
+@media (max-width: 550px){
+    .hero-container{
+        min-height: 300px!important;
+
+    }
+    .hero-content{
+        max-width: 90%!important;
+    }
+}
 .hero-content{
-    max-width: 60%;
+    max-width: 70%;
     margin: auto;
     display: flex;
     gap: 40px;
@@ -75,7 +96,7 @@ ul,li,p{
 }
 .close-video {
     position: absolute;
-    z-index: 2;
+    z-index: 3;
     bottom: 10px;
     left: 10px;
 }
@@ -87,7 +108,7 @@ ul,li,p{
     bottom: 0;
 }
 
-.poster_img img{
+.poster-img img{
     width: auto;
     min-height: 100%;
 }
@@ -123,7 +144,7 @@ ul,li,p{
     text-decoration: none;
     color: white;
 }
-.app_navbar_search a{
+.app-navbar-search a{
     text-decoration: none;
 }
 .result-cards:hover{
@@ -144,17 +165,17 @@ ul,li,p{
         max-width: 100%;
     }
 }
-.homepage_sections{
+.homepage-sections{
     border-bottom: solid 2px rgba(65, 64, 64, 0.9);
     /* padding: 40px 0; */
     font-size: 13px;
     color: rgba(153, 151, 151, 0.9);
     padding-bottom: 40px ;
 }
-.homepage_sections h2{
+.homepage-sections h2{
     padding: 40px 0 10px 40px ;
 }
-.homepage_sections h5{
+.homepage-sections h5{
 font-size: 17px;
 white-space: nowrap;
 overflow: hidden;
@@ -292,6 +313,11 @@ text-overflow: ellipsis;
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+.md-movie-info h2, .md-movie-info p{
+    font-size: min(6vw, 24px, 5rem);
+    margin: 0;
+
 }
 .info-date{
     font-size: 23px;
@@ -478,4 +504,10 @@ body {
     .home-hero-content {
         max-width: 80%;
       }
+}
+.cast-image{
+    max-width: 100%;
+}
+.youtube{
+    margin-top: 70px;
 }
